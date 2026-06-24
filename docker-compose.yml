@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: manufacturing_quote_postgres
+    environment:
+      POSTGRES_DB: manufacturing_quote
+      POSTGRES_USER: manufacturing_user
+      POSTGRES_PASSWORD: manufacturing_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

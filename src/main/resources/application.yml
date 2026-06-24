@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: manufacturing-quote-platform
+  datasource:
+    url: jdbc:postgresql://localhost:5432/manufacturing_quote
+    username: manufacturing_user
+    password: manufacturing_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  file-storage:
+    upload-dir: uploads
