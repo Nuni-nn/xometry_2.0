@@ -34,6 +34,8 @@ Useful URLs:
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - Health check: `http://localhost:8080/api/v1/health`
 
+PostgreSQL is exposed on local port `5433` to avoid conflicts with any existing local PostgreSQL service.
+
 ## First Milestone
 
 - Spring Boot Maven project

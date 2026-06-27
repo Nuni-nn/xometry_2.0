@@ -5,7 +5,7 @@ spring:
   application:
     name: manufacturing-quote-platform
   datasource:
-    url: jdbc:postgresql://localhost:5432/manufacturing_quote
+    url: jdbc:postgresql://localhost:5433/manufacturing_quote
     username: manufacturing_user
     password: manufacturing_password
   jpa:
