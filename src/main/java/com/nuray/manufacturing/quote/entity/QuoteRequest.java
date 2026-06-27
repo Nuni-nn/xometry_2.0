@@ -60,6 +60,9 @@ public class QuoteRequest {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal estimatedPrice = BigDecimal.ZERO;
 
+    @Column(length = 1000)
+    private String engineerComment;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -141,6 +144,14 @@ public class QuoteRequest {
 
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
         this.estimatedPrice = estimatedPrice;
+    }
+
+    public String getEngineerComment() {
+        return engineerComment;
+    }
+
+    public void setEngineerComment(String engineerComment) {
+        this.engineerComment = engineerComment;
     }
 
     public LocalDateTime getCreatedAt() {

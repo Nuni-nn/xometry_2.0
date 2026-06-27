@@ -3,11 +3,13 @@ package com.nuray.manufacturing.quote.controller;
 import com.nuray.manufacturing.common.dto.ApiResponse;
 import com.nuray.manufacturing.quote.dto.CreateQuoteRequest;
 import com.nuray.manufacturing.quote.dto.QuoteResponse;
+import com.nuray.manufacturing.quote.dto.ReviewQuoteRequest;
 import com.nuray.manufacturing.quote.service.QuoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +53,18 @@ public class QuoteController {
     @PostMapping("/{id}/calculate")
     public ApiResponse<QuoteResponse> calculateQuote(@PathVariable UUID id) {
         return ApiResponse.success("Quote price calculated successfully", quoteService.calculateQuote(id));
+    }
+
+    @PatchMapping("/{id}/review")
+    public ApiResponse<QuoteResponse> reviewQuote(
+            @PathVariable UUID id,
+            @Valid @RequestBody ReviewQuoteRequest request
+    ) {
+        return ApiResponse.success("Quote reviewed successfully", quoteService.reviewQuote(id, request));
+    }
+
+    @PostMapping("/{id}/approve")
+    public ApiResponse<QuoteResponse> approveQuote(@PathVariable UUID id) {
+        return ApiResponse.success("Quote approved successfully", quoteService.approveQuote(id));
     }
 }

@@ -6,6 +6,7 @@ import com.nuray.manufacturing.material.entity.Material;
 import com.nuray.manufacturing.material.repository.MaterialRepository;
 import com.nuray.manufacturing.quote.dto.CreateQuoteRequest;
 import com.nuray.manufacturing.quote.dto.QuoteResponse;
+import com.nuray.manufacturing.quote.dto.ReviewQuoteRequest;
 import com.nuray.manufacturing.quote.dto.SimpleReference;
 import com.nuray.manufacturing.quote.entity.QuoteRequest;
 import com.nuray.manufacturing.quote.enums.QuoteStatus;
@@ -61,7 +62,7 @@ public class QuoteService {
         quote.setStatus(QuoteStatus.DRAFT);
         quote.setEstimatedPrice(calculateEstimatedPrice(quote));
 
-        return toResponse(quoteRequestRepository.save(quote));
+        return toResponse(quoteRequestRepository.saveAndFlush(quote));
     }
 
     @Transactional(readOnly = true)
@@ -84,14 +85,48 @@ public class QuoteService {
             throw new BusinessException("Only draft quotes can be submitted");
         }
         quote.setStatus(QuoteStatus.SUBMITTED);
-        return toResponse(quote);
+        return toResponse(quoteRequestRepository.saveAndFlush(quote));
     }
 
     @Transactional
     public QuoteResponse calculateQuote(UUID id) {
         QuoteRequest quote = findQuote(id);
         quote.setEstimatedPrice(calculateEstimatedPrice(quote));
-        return toResponse(quote);
+        return toResponse(quoteRequestRepository.saveAndFlush(quote));
+    }
+
+    @Transactional
+    public QuoteResponse reviewQuote(UUID id, ReviewQuoteRequest request) {
+        QuoteRequest quote = findQuote(id);
+        if (quote.getStatus() != QuoteStatus.SUBMITTED
+                && quote.getStatus() != QuoteStatus.UNDER_REVIEW) {
+            throw new BusinessException("Only submitted quotes can be reviewed");
+        }
+        if (request.status() != QuoteStatus.UNDER_REVIEW
+                && request.status() != QuoteStatus.QUOTED
+                && request.status() != QuoteStatus.REJECTED) {
+            throw new BusinessException("Review status must be UNDER_REVIEW, QUOTED, or REJECTED");
+        }
+        if (request.status() == QuoteStatus.QUOTED && request.estimatedPrice() == null) {
+            throw new BusinessException("Estimated price is required for a quoted request");
+        }
+
+        if (request.estimatedPrice() != null) {
+            quote.setEstimatedPrice(request.estimatedPrice().setScale(2, RoundingMode.HALF_UP));
+        }
+        quote.setEngineerComment(request.engineerComment());
+        quote.setStatus(request.status());
+        return toResponse(quoteRequestRepository.saveAndFlush(quote));
+    }
+
+    @Transactional
+    public QuoteResponse approveQuote(UUID id) {
+        QuoteRequest quote = findQuote(id);
+        if (quote.getStatus() != QuoteStatus.QUOTED) {
+            throw new BusinessException("Only quoted requests can be approved");
+        }
+        quote.setStatus(QuoteStatus.APPROVED);
+        return toResponse(quoteRequestRepository.saveAndFlush(quote));
     }
 
     private QuoteRequest findQuote(UUID id) {
@@ -133,6 +168,7 @@ public class QuoteService {
                 quote.getDescription(),
                 quote.getStatus(),
                 quote.getEstimatedPrice(),
+                quote.getEngineerComment(),
                 quote.getCreatedAt(),
                 quote.getUpdatedAt()
         );

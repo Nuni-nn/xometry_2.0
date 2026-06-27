@@ -18,6 +18,7 @@ public record QuoteResponse(
         String description,
         QuoteStatus status,
         BigDecimal estimatedPrice,
+        String engineerComment,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
